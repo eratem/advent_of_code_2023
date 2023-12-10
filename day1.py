@@ -69,10 +69,34 @@ def digitize(line: str) -> str:
     return line
 
 
-def functional_decomposition2(line: str) -> int:
-    matches = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-    digits = list(map(lambda x: int(x), filter(lambda x: x in matches, digitize(line))))
-    return digits[0] * 10 + digits[-1]
+def decode2(line: str) -> int:
+    matches = [
+        ("one", "1"),
+        ("two", "2"),
+        ("three", "3"),
+        ("four", "4"),
+        ("five", "5"),
+        ("six", "6"),
+        ("seven", "7"),
+        ("eight", "8"),
+        ("nine", "9"),
+    ]
+    numbers = []
+    for word, value in matches:
+        word_index = line.find(word)
+        num_index = line.find(value)
+        right_word_index = line.rfind(word)
+        right_num_index = line.rfind(value)
+        if word_index != -1:
+            numbers.append((word_index, int(value)))
+        if num_index != -1:
+            numbers.append((num_index, int(value)))
+        if right_num_index != -1:
+            numbers.append((right_num_index, int(value)))
+        if right_word_index != -1:
+            numbers.append((right_word_index, int(value)))
+    sorted_numbers = sorted(numbers, key=lambda x: x[0])
+    return sorted_numbers[0][1] * 10 + sorted_numbers[-1][1]
 
 
 def naive_puzzle1(data: list[str]) -> int:
@@ -87,8 +111,8 @@ def functional_puzzle1(data: list[str]) -> int:
     return sum(map(functional_decomposition1, data))
 
 
-def functional_puzzle2(data: list[str]) -> int:
-    return sum(map(functional_decomposition2, data))
+def decoding_puzzle2(data: list[str]) -> int:
+    return sum(map(decode2, data))
 
 
 data = load_puzzle()
@@ -109,6 +133,6 @@ end = timer()
 print(f"Functional Puzzle 1: {end - start}")
 
 start = timer()
-print(functional_puzzle2(data))
+print(decoding_puzzle2(data))
 end = timer()
-print(f"Functional Puzzle 2: {end - start}")
+print(f"Decoded Puzzle 2: {end - start}")
