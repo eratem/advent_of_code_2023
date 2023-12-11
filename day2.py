@@ -38,16 +38,31 @@ def _max_rgb_dependent_id(game_info: str, r: int, g: int, b: int) -> int:
         return 0
 
 
-def _valid_game_id(line: str) -> int:
+def _get_game_info_and_rgb_info_from_line(line: str) -> tuple[str, str]:
     split_line = line.split(":")
     game_info = split_line[0]
     rgb_info = split_line[1]
+    return game_info, rgb_info
+
+
+def _valid_game_id(line: str) -> int:
+    game_info, rgb_info = _get_game_info_and_rgb_info_from_line(line)
     r, g, b = _decode_max_rgb(rgb_info)
     return _max_rgb_dependent_id(game_info, r, g, b)
 
 
+def _power_of_the_game(line: str) -> int:
+    _, rgb_info = _get_game_info_and_rgb_info_from_line(line)
+    r, g, b = _decode_max_rgb(rgb_info)
+    return r * g * b
+
+
 def sum_of_valid_games(data: list[str]) -> int:
     return sum([_valid_game_id(line) for line in data])
+
+
+def sum_of_powers_of_the_games(data: list[str]) -> int:
+    return sum([_power_of_the_game(line) for line in data])
 
 
 def main() -> None:
@@ -56,6 +71,11 @@ def main() -> None:
 
     start = timer()
     print(f"Sum of valid games is: {sum_of_valid_games(data)}")
+    end = timer()
+    print(f"Time taken: {end-start}")
+
+    start = timer()
+    print(f"Sum of power of games is: {sum_of_powers_of_the_games(data)}")
     end = timer()
     print(f"Time taken: {end-start}")
 
