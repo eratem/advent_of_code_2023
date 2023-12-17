@@ -27,6 +27,25 @@ def _search_numbers_with_indexes(line: str) -> list[IndexedNumber]:
     return results
 
 
+def _get_gear_indexes(line: str) -> list[int]:
+    return [index for index, character in enumerate(line) if character == "*"]
+
+
+def _find_gear_ratios(gear_indexes: list[int], frame: list[str]) -> list[int]:
+    gear_ratios = []
+    indexed_number_frame = [_search_numbers_with_indexes(line) for line in frame]
+    found_gear_numbers = []
+    for gear_index in gear_indexes:
+        for line in indexed_number_frame:
+            for indexed_number in line:
+                if indexed_number.start_index <= gear_index <= indexed_number.end_index:
+                    found_gear_numbers.append(indexed_number.number)
+        if len(found_gear_numbers) == 2:
+            gear_ratios.append(found_gear_numbers[0] * found_gear_numbers[1])
+        found_gear_numbers = []
+    return gear_ratios
+
+
 def _find_numbers_with_neighbouring_symbols(
     indexed_numbers: list[IndexedNumber], frame: list[str]
 ) -> list[int]:
@@ -62,9 +81,24 @@ def solve_puzzle1(data: list[str]) -> int:
         else:
             frame = data[index - 1 : index + 2]
         numbers = _search_numbers_with_indexes(current_row)
-        matched_numbers = _find_numbers_with_neighbouring_symbols(numbers, frame)
-        matches += matched_numbers
+        matches += _find_numbers_with_neighbouring_symbols(numbers, frame)
     return sum(matches)
+
+
+def solve_puzzle2(data: list[str]) -> int:
+    data = [line.strip() for line in data]
+    number_of_rows = len(data)
+    gear_ratios = []
+    for index, current_row in enumerate(data):
+        if index == 0:
+            frame = data[index : index + 2]
+        elif index == number_of_rows - 1:
+            frame = data[index - 1 : number_of_rows]
+        else:
+            frame = data[index - 1 : index + 2]
+        gear_indexes = _get_gear_indexes(current_row)
+        gear_ratios += _find_gear_ratios(gear_indexes, frame)
+    return sum(gear_ratios)
 
 
 def main() -> None:
@@ -78,7 +112,9 @@ def main() -> None:
     print(f"Time taken: {end-start}")
 
     start = timer()
+    solution2 = solve_puzzle2(data)
     end = timer()
+    print(solution2)
     print(f"Time taken: {end-start}")
 
 
